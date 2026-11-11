@@ -1,0 +1,2 @@
+[tool.ruff.lint.per-file-ignores]
+"test/test_aceptacion.py" = ["I001"]
