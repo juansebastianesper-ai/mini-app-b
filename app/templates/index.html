@@ -80,11 +80,7 @@
       <h1>Conversor de unidades</h1>
       <form id="formulario">
         <label for="tipo">Tipo de medida</label>
-        <select id="tipo" name="tipo">
-          {% for tipo, unidades in tipos.items() %}
-          <option value="{{ tipo }}">{{ tipo|capitalize }}</option>
-          {% endfor %}
-        </select>
+        <select id="tipo" name="tipo"></select>
 
         <label for="valor">Valor</label>
         <input id="valor" name="valor" type="number" step="any" required>
@@ -95,17 +91,17 @@
         <label for="a">A</label>
         <select id="a" name="a"></select>
 
-        <button type="submit">Convertir</button>
+        <button type="submit" disabled>Convertir</button>
       </form>
       <p id="resultado" aria-live="polite"></p>
     </main>
     <script>
-      const unidadesPorTipo = {{ tipos | tojson }};
       const formulario = document.querySelector("#formulario");
       const tipo = document.querySelector("#tipo");
       const unidadOrigen = document.querySelector("#de");
       const unidadDestino = document.querySelector("#a");
       const salida = document.querySelector("#resultado");
+      const botonConvertir = formulario.querySelector("button");
 
       function actualizarUnidades() {
         const unidades = unidadesPorTipo[tipo.value];
@@ -116,8 +112,29 @@
         }
       }
 
+      let unidadesPorTipo = {};
+
+      async function cargarUnidades() {
+        try {
+          const respuesta = await fetch("/api/unidades");
+          if (!respuesta.ok) {
+            throw new Error("No se pudieron cargar las unidades disponibles.");
+          }
+          unidadesPorTipo = await respuesta.json();
+          tipo.replaceChildren(
+            ...Object.keys(unidadesPorTipo).map(
+              (nombre) => new Option(nombre[0].toUpperCase() + nombre.slice(1), nombre),
+            ),
+          );
+          actualizarUnidades();
+          botonConvertir.disabled = false;
+        } catch {
+          salida.textContent = "No se pudieron cargar las unidades disponibles.";
+        }
+      }
+
       tipo.addEventListener("change", actualizarUnidades);
-      actualizarUnidades();
+      cargarUnidades();
 
       formulario.addEventListener("submit", async (evento) => {
         evento.preventDefault();

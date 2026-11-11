@@ -15,8 +15,13 @@ def pagina_principal(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"tipos": servicios.UNIDADES_POR_TIPO},
+        context={},
     )
+
+
+@app.get("/api/unidades")
+def obtener_unidades() -> dict[str, list[str]]:
+    return servicios.obtener_unidades()
 
 
 @app.get("/api/convertir")

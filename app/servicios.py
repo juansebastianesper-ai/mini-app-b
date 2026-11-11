@@ -4,6 +4,11 @@ UNIDADES_POR_TIPO = {
     "masa": ("g", "kg", "lb"),
 }
 
+
+def obtener_unidades() -> dict[str, list[str]]:
+    return {tipo: list(unidades) for tipo, unidades in UNIDADES_POR_TIPO.items()}
+
+
 _FACTORES_LONGITUD = {"mm": 0.001, "cm": 0.01, "m": 1.0, "km": 1000.0}
 _FACTORES_MASA = {"g": 0.001, "kg": 1.0, "lb": 0.45359237}
 
